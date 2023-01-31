@@ -121,3 +121,80 @@ app.post("/videos", async (req: Request, res: Response) => {
         }
     }
 })
+
+
+app.get("/videos/:id", async (req: Request, res: Response) => {
+    try {
+        const id = req.params.id
+
+        const videoDataBase = new VideoDataBase()
+        const videoDB = await videoDataBase.findVideoById(id)
+        
+
+        if (!videoDB) {
+            res.status(404)
+            throw new Error("'id' não encontrado")
+        }
+
+        const videos = new Videos(
+            videoDB.id,
+            videoDB.title,
+            videoDB.duration,
+            videoDB.created_at
+        )
+
+
+        res.status(200).send({ videos})
+
+    } catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+})
+
+
+
+
+app.delete("/videos/:id", async (req: Request, res: Response) => {
+    try {
+        const idToDelete = req.params.id 
+        const videoDataBase = new VideoDataBase()
+
+
+        
+        const videoToDeleteDB = await videoDataBase.findVideoById(idToDelete)
+        
+
+        if (!videoToDeleteDB) {
+            res.status(404)
+            throw new Error("'id' não encontrado")
+        }
+
+        await videoDataBase.delete(idToDelete)
+
+        res.status(204).send({})
+        
+
+    } catch (error) {
+        console.log(error)
+
+        if (req.statusCode === 200) {
+            res.status(500)
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message)
+        } else {
+            res.send("Erro inesperado")
+        }
+    }
+})

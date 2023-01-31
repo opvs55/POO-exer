@@ -37,4 +37,9 @@ export class VideoDataBase extends BaseDataBase{
         .connection(VideoDataBase.TABLE_VIDEOS)
         .insert(newVideoDB)
     }
+    public async delete(id: string): Promise<void> {
+        await BaseDataBase
+            .connection(VideoDataBase.TABLE_VIDEOS)
+            .del(id);
+    }
 }
